@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwingAnnotator — Golf Swing Annotation Tool</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700&display=swap');
 
   :root {
     --bg: #0b0b0b;
@@ -586,7 +589,7 @@
       <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
       <path d="M2 12h20"/>
     </svg>
-    <h1>SwingLens</h1>
+    <h1>SwingAnnotator</h1>
   </div>
   <div class="header-actions">
     <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;" id="videoName">No video loaded</span>
@@ -771,7 +774,7 @@
 
 <script>
 /* ═══════════════════════════════════════
-   SwingLens — Golf Swing Annotation Tool
+   Golf Swing Annotation Tool
    ═══════════════════════════════════════ */
 
 // ─── STATE ───
@@ -1162,7 +1165,7 @@ document.getElementById('saveSession').addEventListener('click', () => {
   const blob = new Blob([data], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'swinglens-session.json';
+  a.download = 'swingannotator-session.json';
   a.click();
   showToast('Session saved');
 });
@@ -1225,7 +1228,7 @@ async function exportVideo() {
       const blob = new Blob(chunks, { type: 'video/webm' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'swinglens-annotated.webm';
+      a.download = 'swingannotator-annotated.webm';
       a.click();
       exportModal.classList.remove('show');
       showToast('Video exported!');
