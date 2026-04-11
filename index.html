@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SwingAnnotator — Golf Swing Annotation Tool</title>
+<title>swingannotator — Golf Swing Annotation Tool</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700&display=swap');
 
@@ -589,7 +589,7 @@
       <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
       <path d="M2 12h20"/>
     </svg>
-    <h1>SwingAnnotator</h1>
+    <h1>Annotator</h1>
   </div>
   <div class="header-actions">
     <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;" id="videoName">No video loaded</span>
@@ -658,7 +658,7 @@
         <polyline points="17 8 12 3 7 8"/>
         <line x1="12" y1="3" x2="12" y2="15"/>
       </svg>
-      <h2>Drop your swing video here</h2>
+      <h2>Drop your  video here</h2>
       <p>or click to browse</p>
     </div>
     <input type="file" id="fileInput" accept="video/*">
@@ -774,7 +774,7 @@
 
 <script>
 /* ═══════════════════════════════════════
-   Golf Swing Annotation Tool
+   Golf  Annotation Tool
    ═══════════════════════════════════════ */
 
 // ─── STATE ───
@@ -1165,7 +1165,7 @@ document.getElementById('saveSession').addEventListener('click', () => {
   const blob = new Blob([data], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'swingannotator-session.json';
+  a.download = 'annotator-session.json';
   a.click();
   showToast('Session saved');
 });
@@ -1228,7 +1228,7 @@ async function exportVideo() {
       const blob = new Blob(chunks, { type: 'video/webm' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'swingannotator-annotated.webm';
+      a.download = 'annotator-annotated.webm';
       a.click();
       exportModal.classList.remove('show');
       showToast('Video exported!');
