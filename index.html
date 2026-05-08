@@ -5,13 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SwingAnnotator — Golf Swing Annotation Tool</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700&display=swap');
+  @import url('@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
-  :root {
+  /* ─── LIGHT THEME (default) ─── */
+  :root,
+  [data-theme="light"] {
+    --bg: #f5f5f5;
+    --bg-surface: #ffffff;
+    --bg-elevated: #fafafa;
+    --bg-hover: #ececec;
+    --canvas-bg: #1a1a1a;
+    --accent: #00b85f;
+    --accent-dim: rgba(0, 184, 95, 0.12);
+    --accent-glow: rgba(0, 184, 95, 0.25);
+    --text: #1a1a1a;
+    --text-dim: #666;
+    --text-muted: #999;
+    --border: #e0e0e0;
+    --border-strong: #cccccc;
+    --red: #e63946;
+    --danger: #e63946;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --radius: 8px;
+    --radius-sm: 5px;
+    --transition: 0.2s ease;
+  }
+
+  /* ─── DARK THEME ─── */
+  [data-theme="dark"] {
     --bg: #0b0b0b;
     --bg-surface: #141414;
     --bg-elevated: #1a1a1a;
     --bg-hover: #222222;
+    --canvas-bg: #000000;
     --accent: #00ff88;
     --accent-dim: rgba(0, 255, 136, 0.15);
     --accent-glow: rgba(0, 255, 136, 0.3);
@@ -19,17 +45,16 @@
     --text-dim: #777;
     --text-muted: #555;
     --border: #2a2a2a;
+    --border-strong: #3a3a3a;
     --red: #ff4444;
     --danger: #ff3355;
-    --radius: 8px;
-    --radius-sm: 5px;
-    --transition: 0.2s ease;
+    --shadow: 0 4px 20px rgba(0,0,0,0.5);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     background: var(--bg);
     color: var(--text);
     height: 100vh;
@@ -37,6 +62,7 @@
     display: flex;
     flex-direction: column;
     user-select: none;
+    transition: background 0.3s ease, color 0.3s ease;
   }
 
   /* ─── HEADER ─── */
@@ -49,6 +75,7 @@
     border-bottom: 1px solid var(--border);
     height: 50px;
     flex-shrink: 0;
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
   .header-brand {
     display: flex;
@@ -64,7 +91,48 @@
     font-family: 'JetBrains Mono', monospace;
     text-transform: uppercase;
   }
-  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .header-actions { display: flex; gap: 14px; align-items: center; }
+  #videoName {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ─── THEME TOGGLE ─── */
+  .theme-toggle {
+    width: 44px;
+    height: 24px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    position: relative;
+    transition: all var(--transition);
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .theme-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    transition: transform var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-surface);
+  }
+  [data-theme="dark"] .theme-toggle-thumb {
+    transform: translateX(20px);
+  }
+  .theme-toggle-thumb svg { width: 12px; height: 12px; }
+  .theme-toggle-thumb .icon-moon { display: none; }
+  [data-theme="dark"] .theme-toggle-thumb .icon-sun { display: none; }
+  [data-theme="dark"] .theme-toggle-thumb .icon-moon { display: block; }
 
   /* ─── MAIN LAYOUT ─── */
   .main {
@@ -85,6 +153,7 @@
     padding: 12px 0;
     gap: 4px;
     flex-shrink: 0;
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
   .toolbar-section-label {
     font-size: 9px;
@@ -136,6 +205,7 @@
     transition: opacity 0.15s;
     z-index: 100;
     font-family: 'JetBrains Mono', monospace;
+    box-shadow: var(--shadow);
   }
   .tool-btn:hover .tooltip { opacity: 1; }
 
@@ -159,7 +229,7 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    border: 2px solid var(--border);
+    border: 2px solid var(--border-strong);
     cursor: pointer;
     transition: all var(--transition);
     position: relative;
@@ -184,7 +254,7 @@
     border-radius: 50%;
   }
   .color-input-wrapper input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
-  .color-input-wrapper input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 2px solid var(--border); }
+  .color-input-wrapper input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 2px solid var(--border-strong); }
 
   /* ─── CANVAS AREA ─── */
   .canvas-area {
@@ -193,14 +263,15 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    background: #000;
+    background: var(--canvas-bg);
     overflow: hidden;
     min-width: 0;
+    transition: background 0.3s ease;
   }
   .canvas-container {
     position: relative;
     background: #000;
-    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    box-shadow: 0 0 40px rgba(0,0,0,0.4);
   }
   #videoElement {
     display: block;
@@ -225,8 +296,8 @@
     align-items: center;
     justify-content: center;
     z-index: 10;
-    background: radial-gradient(ellipse at center, rgba(0,255,136,0.03) 0%, transparent 70%);
-    border: 2px dashed var(--border);
+    background: var(--bg);
+    border: 2px dashed var(--border-strong);
     margin: 20px;
     border-radius: 16px;
     cursor: pointer;
@@ -234,11 +305,11 @@
   }
   .upload-overlay:hover {
     border-color: var(--accent);
-    background: radial-gradient(ellipse at center, rgba(0,255,136,0.06) 0%, transparent 70%);
+    background: var(--accent-dim);
   }
   .upload-overlay.dragover {
     border-color: var(--accent);
-    background: rgba(0,255,136,0.05);
+    background: var(--accent-dim);
   }
   .upload-overlay.hidden { display: none; }
   .upload-icon {
@@ -246,7 +317,7 @@
     height: 64px;
     margin-bottom: 16px;
     color: var(--accent);
-    opacity: 0.6;
+    opacity: 0.7;
   }
   .upload-overlay h2 {
     font-size: 18px;
@@ -297,6 +368,7 @@
     gap: 16px;
     flex-shrink: 0;
     overflow-y: auto;
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
   .panel-group {
     display: flex;
@@ -320,7 +392,7 @@
     border-radius: var(--radius-sm);
     color: var(--text);
     font-size: 12px;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     transition: all var(--transition);
     width: 100%;
@@ -336,11 +408,23 @@
     color: var(--accent);
   }
   .panel-btn.accent:hover {
-    background: rgba(0,255,136,0.25);
+    background: var(--accent-dim);
+    filter: brightness(1.1);
   }
   .panel-btn.danger:hover {
     border-color: var(--danger);
     color: var(--danger);
+    background: rgba(230, 57, 70, 0.08);
+  }
+  .panel-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .panel-btn:disabled:hover {
+    background: var(--bg-elevated);
+    border-color: var(--border);
+    color: var(--text);
+    filter: none;
   }
   .panel-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
@@ -406,7 +490,7 @@
     flex: 1;
     -webkit-appearance: none;
     height: 4px;
-    background: var(--border);
+    background: var(--border-strong);
     border-radius: 2px;
     outline: none;
   }
@@ -436,6 +520,7 @@
     padding: 0 16px;
     gap: 12px;
     flex-shrink: 0;
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
   .play-btn {
     width: 36px;
@@ -452,8 +537,8 @@
     flex-shrink: 0;
   }
   .play-btn:hover {
-    background: rgba(0,255,136,0.25);
     box-shadow: 0 0 16px var(--accent-glow);
+    filter: brightness(1.1);
   }
   .play-btn svg { width: 16px; height: 16px; }
 
@@ -493,6 +578,17 @@
     box-shadow: 0 0 8px var(--accent-glow);
   }
 
+  /* Unsaved changes dot */
+  .unsaved-dot {
+    display: none;
+    width: 6px;
+    height: 6px;
+    background: var(--danger);
+    border-radius: 50%;
+    margin-left: 4px;
+  }
+  .unsaved-dot.show { display: inline-block; }
+
   /* ─── TOAST ─── */
   .toast {
     position: fixed;
@@ -510,14 +606,15 @@
     transition: all 0.3s;
     z-index: 9999;
     pointer-events: none;
+    box-shadow: var(--shadow);
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ─── EXPORT MODAL ─── */
+  /* ─── EXPORT MODAL & CONFIRM MODAL ─── */
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.55);
     display: none;
     align-items: center;
     justify-content: center;
@@ -530,8 +627,10 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 32px;
-    min-width: 320px;
+    min-width: 360px;
+    max-width: 440px;
     text-align: center;
+    box-shadow: var(--shadow);
   }
   .modal h3 {
     font-size: 16px;
@@ -539,7 +638,7 @@
     color: var(--accent);
     font-family: 'JetBrains Mono', monospace;
   }
-  .modal p { font-size: 13px; color: var(--text-dim); margin-bottom: 20px; }
+  .modal p { font-size: 13px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.5; }
   .modal .progress-bar {
     width: 100%;
     height: 6px;
@@ -561,6 +660,64 @@
     font-family: 'JetBrains Mono', monospace;
   }
 
+  /* Confirm modal buttons */
+  .confirm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .modal-btn {
+    width: 100%;
+    padding: 11px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .modal-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--bg-hover);
+  }
+  .modal-btn.primary {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .modal-btn.primary:hover {
+    filter: brightness(1.1);
+  }
+  .modal-btn.danger {
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+  .modal-btn.danger:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: rgba(230, 57, 70, 0.08);
+  }
+  .modal-btn.ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-dim);
+  }
+  .modal-btn.ghost:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+    border-color: transparent;
+  }
+  .modal-btn svg { width: 14px; height: 14px; }
+
   /* ─── CURSORS ─── */
   .cursor-crosshair { cursor: crosshair; }
   .cursor-default { cursor: default; }
@@ -568,7 +725,7 @@
   /* ─── SCROLLBAR ─── */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg-surface); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
   /* ─── Responsive ─── */
@@ -592,7 +749,18 @@
     <h1>SwingAnnotator</h1>
   </div>
   <div class="header-actions">
-    <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;" id="videoName">No video loaded</span>
+    <span id="videoName">No video loaded<span class="unsaved-dot" id="unsavedDot" title="Unsaved changes"></span></span>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark mode">
+      <span class="theme-toggle-thumb">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </span>
+    </button>
   </div>
 </header>
 
@@ -742,6 +910,14 @@
       </button>
       <input type="file" id="sessionInput" accept=".json" style="display:none">
     </div>
+
+    <div class="panel-group">
+      <span class="panel-label">Video</span>
+      <button class="panel-btn danger" id="removeVideoBtn" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Remove Video
+      </button>
+    </div>
   </div>
 </div>
 
@@ -772,6 +948,30 @@
   </div>
 </div>
 
+<!-- CONFIRM REMOVE MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <h3>Unsaved Changes</h3>
+    <p>You have unsaved annotations on this video. What would you like to do before removing it?</p>
+    <div class="confirm-actions">
+      <button class="modal-btn primary" id="confirmSaveSession">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+        Save Session (annotations as JSON)
+      </button>
+      <button class="modal-btn primary" id="confirmSaveVideo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Save Video (with annotations baked in)
+      </button>
+      <button class="modal-btn danger" id="confirmDiscard">
+        Discard &amp; Remove Video
+      </button>
+      <button class="modal-btn ghost" id="confirmCancel">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════
    SwingAnnotator — Golf Swing Annotation Tool
@@ -782,13 +982,15 @@ const state = {
   tool: 'line',
   color: '#ff4444',
   strokeWidth: 3,
-  strokes: [],       // { type, color, width, points/coords, ... }
+  strokes: [],
   isDrawing: false,
   startX: 0,
   startY: 0,
   currentStroke: null,
   videoLoaded: false,
   playbackRate: 1,
+  isDirty: false,        // unsaved annotation changes since last save
+  currentVideoUrl: null  // object URL for cleanup
 };
 
 // ─── DOM ───
@@ -809,6 +1011,26 @@ const exportModal = document.getElementById('exportModal');
 const exportProgress = document.getElementById('exportProgress');
 const exportText = document.getElementById('exportText');
 const toast = document.getElementById('toast');
+const removeVideoBtn = document.getElementById('removeVideoBtn');
+const confirmModal = document.getElementById('confirmModal');
+const unsavedDot = document.getElementById('unsavedDot');
+const themeToggle = document.getElementById('themeToggle');
+
+// ─── THEME ───
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  try { localStorage.setItem('swing-theme', theme); } catch {}
+}
+function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem('swing-theme'); } catch {}
+  applyTheme(saved === 'dark' ? 'dark' : 'light'); // default light
+}
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(current === 'light' ? 'dark' : 'light');
+});
+initTheme();
 
 // ─── HELPERS ───
 function showToast(msg) {
@@ -816,13 +1038,18 @@ function showToast(msg) {
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
-
 function formatTime(t) {
   if (isNaN(t)) return '0:00.00';
   const m = Math.floor(t / 60);
   const s = Math.floor(t % 60);
   const ms = Math.floor((t % 1) * 100);
   return `${m}:${s.toString().padStart(2,'0')}.${ms.toString().padStart(2,'0')}`;
+}
+
+// ─── DIRTY STATE TRACKING ───
+function setDirty(dirty) {
+  state.isDirty = dirty;
+  unsavedDot.classList.toggle('show', dirty);
 }
 
 // ─── VIDEO HANDLING ───
@@ -843,15 +1070,22 @@ fileInput.addEventListener('change', e => {
 });
 
 function loadVideo(file) {
+  // Clean up any previous object URL
+  if (state.currentVideoUrl) {
+    try { URL.revokeObjectURL(state.currentVideoUrl); } catch {}
+  }
   const url = URL.createObjectURL(file);
+  state.currentVideoUrl = url;
   video.src = url;
-  document.getElementById('videoName').textContent = file.name;
+  document.getElementById('videoName').firstChild.textContent = file.name;
   video.addEventListener('loadedmetadata', () => {
     resizeCanvas();
     uploadOverlay.classList.add('hidden');
     container.style.display = 'block';
     state.videoLoaded = true;
     state.strokes = [];
+    setDirty(false);
+    removeVideoBtn.disabled = false;
     redraw();
     showToast('Video loaded');
   }, { once: true });
@@ -877,10 +1111,70 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', () => { if (state.videoLoaded) { resizeCanvas(); redraw(); }});
 
-// Play/Pause
+// ─── REMOVE VIDEO ───
+function performRemoveVideo() {
+  // Pause and clear video
+  try { video.pause(); } catch {}
+  video.removeAttribute('src');
+  try { video.load(); } catch {}
+  if (state.currentVideoUrl) {
+    try { URL.revokeObjectURL(state.currentVideoUrl); } catch {}
+    state.currentVideoUrl = null;
+  }
+  // Reset UI
+  container.style.display = 'none';
+  uploadOverlay.classList.remove('hidden');
+  state.videoLoaded = false;
+  state.strokes = [];
+  state.currentStroke = null;
+  state.isDrawing = false;
+  setDirty(false);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  document.getElementById('videoName').firstChild.textContent = 'No video loaded';
+  fileInput.value = '';
+  removeVideoBtn.disabled = true;
+  playIcon.style.display = 'block';
+  pauseIcon.style.display = 'none';
+  timelineProgress.style.width = '0%';
+  timeDisplay.textContent = '0:00.00 / 0:00.00';
+  showToast('Video removed');
+}
+
+removeVideoBtn.addEventListener('click', () => {
+  if (!state.videoLoaded) return;
+  if (state.isDirty && state.strokes.length > 0) {
+    confirmModal.classList.add('show');
+  } else {
+    performRemoveVideo();
+  }
+});
+
+// Confirm modal buttons
+document.getElementById('confirmCancel').addEventListener('click', () => {
+  confirmModal.classList.remove('show');
+});
+document.getElementById('confirmDiscard').addEventListener('click', () => {
+  confirmModal.classList.remove('show');
+  performRemoveVideo();
+});
+document.getElementById('confirmSaveSession').addEventListener('click', () => {
+  saveSessionToFile();
+  confirmModal.classList.remove('show');
+  // Don't auto-remove — user might want to also export video
+  showToast('Session saved — you can now safely remove');
+});
+document.getElementById('confirmSaveVideo').addEventListener('click', () => {
+  confirmModal.classList.remove('show');
+  exportVideo(); // export modal will take over
+});
+// Click outside modal to cancel
+confirmModal.addEventListener('click', e => {
+  if (e.target === confirmModal) confirmModal.classList.remove('show');
+});
+
+// ─── PLAY/PAUSE ───
 playPauseBtn.addEventListener('click', togglePlay);
 canvas.addEventListener('dblclick', togglePlay);
-
 function togglePlay() {
   if (!state.videoLoaded) return;
   if (video.paused) {
@@ -894,9 +1188,14 @@ function togglePlay() {
   }
 }
 
-// Keyboard shortcut for play/pause
+// Keyboard shortcuts
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') return;
+  // Don't intercept while a modal is open
+  if (confirmModal.classList.contains('show')) {
+    if (e.key === 'Escape') { confirmModal.classList.remove('show'); }
+    return;
+  }
   switch(e.key) {
     case ' ': e.preventDefault(); togglePlay(); break;
     case 'l': selectTool('line'); break;
@@ -911,7 +1210,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// Timeline update
+// Timeline
 video.addEventListener('timeupdate', updateTimeline);
 function updateTimeline() {
   const pct = (video.currentTime / video.duration) * 100;
@@ -919,12 +1218,13 @@ function updateTimeline() {
   timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
 }
 
-// Timeline scrub
+// Scrub
 let isScrubbing = false;
 timelineTrack.addEventListener('mousedown', e => { isScrubbing = true; scrub(e); });
 document.addEventListener('mousemove', e => { if (isScrubbing) scrub(e); });
 document.addEventListener('mouseup', () => isScrubbing = false);
 function scrub(e) {
+  if (!state.videoLoaded) return;
   const rect = timelineTrack.getBoundingClientRect();
   const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
   video.currentTime = pct * video.duration;
@@ -994,39 +1294,23 @@ function getCanvasCoords(e) {
 }
 
 canvas.addEventListener('mousedown', e => {
-  if (e.button !== 0) return;
+  if (e.button !== 0 || !state.videoLoaded) return;
   state.isDrawing = true;
   const { x, y } = getCanvasCoords(e);
   state.startX = x;
   state.startY = y;
-
   if (state.tool === 'freehand') {
-    state.currentStroke = {
-      type: 'freehand',
-      color: state.color,
-      width: state.strokeWidth,
-      points: [{ x, y }]
-    };
+    state.currentStroke = { type: 'freehand', color: state.color, width: state.strokeWidth, points: [{ x, y }] };
   } else {
-    state.currentStroke = {
-      type: state.tool,
-      color: state.color,
-      width: state.strokeWidth,
-      x1: x, y1: y, x2: x, y2: y
-    };
+    state.currentStroke = { type: state.tool, color: state.color, width: state.strokeWidth, x1: x, y1: y, x2: x, y2: y };
   }
 });
 
 canvas.addEventListener('mousemove', e => {
   if (!state.isDrawing || !state.currentStroke) return;
   const { x, y } = getCanvasCoords(e);
-
-  if (state.tool === 'freehand') {
-    state.currentStroke.points.push({ x, y });
-  } else {
-    state.currentStroke.x2 = x;
-    state.currentStroke.y2 = y;
-  }
+  if (state.tool === 'freehand') state.currentStroke.points.push({ x, y });
+  else { state.currentStroke.x2 = x; state.currentStroke.y2 = y; }
   redraw();
 });
 
@@ -1034,6 +1318,7 @@ canvas.addEventListener('mouseup', () => {
   if (state.isDrawing && state.currentStroke) {
     state.strokes.push(state.currentStroke);
     state.currentStroke = null;
+    setDirty(true);
   }
   state.isDrawing = false;
   redraw();
@@ -1043,20 +1328,21 @@ canvas.addEventListener('mouseleave', () => {
   if (state.isDrawing && state.currentStroke) {
     state.strokes.push(state.currentStroke);
     state.currentStroke = null;
+    setDirty(true);
   }
   state.isDrawing = false;
 });
 
-// Touch support
+// Touch
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
-  const touch = e.touches[0];
-  canvas.dispatchEvent(new MouseEvent('mousedown', { clientX: touch.clientX, clientY: touch.clientY, button: 0 }));
+  const t = e.touches[0];
+  canvas.dispatchEvent(new MouseEvent('mousedown', { clientX: t.clientX, clientY: t.clientY, button: 0 }));
 }, { passive: false });
 canvas.addEventListener('touchmove', e => {
   e.preventDefault();
-  const touch = e.touches[0];
-  canvas.dispatchEvent(new MouseEvent('mousemove', { clientX: touch.clientX, clientY: touch.clientY }));
+  const t = e.touches[0];
+  canvas.dispatchEvent(new MouseEvent('mousemove', { clientX: t.clientX, clientY: t.clientY }));
 }, { passive: false });
 canvas.addEventListener('touchend', e => {
   e.preventDefault();
@@ -1064,111 +1350,86 @@ canvas.addEventListener('touchend', e => {
 }, { passive: false });
 
 // ─── RENDER ───
-function drawStroke(s) {
-  ctx.strokeStyle = s.color;
-  ctx.lineWidth = s.width;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
+function drawStroke(s, c = ctx) {
+  c.strokeStyle = s.color;
+  c.lineWidth = s.width;
+  c.lineCap = 'round';
+  c.lineJoin = 'round';
 
   switch (s.type) {
     case 'line':
-      ctx.setLineDash([]);
-      ctx.beginPath();
-      ctx.moveTo(s.x1, s.y1);
-      ctx.lineTo(s.x2, s.y2);
-      ctx.stroke();
+      c.setLineDash([]); c.beginPath(); c.moveTo(s.x1, s.y1); c.lineTo(s.x2, s.y2); c.stroke();
       break;
-
     case 'dashed':
-      ctx.setLineDash([12, 8]);
-      ctx.beginPath();
-      ctx.moveTo(s.x1, s.y1);
-      ctx.lineTo(s.x2, s.y2);
-      ctx.stroke();
-      ctx.setLineDash([]);
+      c.setLineDash([12, 8]); c.beginPath(); c.moveTo(s.x1, s.y1); c.lineTo(s.x2, s.y2); c.stroke(); c.setLineDash([]);
       break;
-
     case 'arrow': {
-      ctx.setLineDash([]);
-      ctx.beginPath();
-      ctx.moveTo(s.x1, s.y1);
-      ctx.lineTo(s.x2, s.y2);
-      ctx.stroke();
-      // Arrowhead
+      c.setLineDash([]); c.beginPath(); c.moveTo(s.x1, s.y1); c.lineTo(s.x2, s.y2); c.stroke();
       const angle = Math.atan2(s.y2 - s.y1, s.x2 - s.x1);
       const headLen = 14 + s.width * 2;
-      ctx.beginPath();
-      ctx.moveTo(s.x2, s.y2);
-      ctx.lineTo(s.x2 - headLen * Math.cos(angle - 0.4), s.y2 - headLen * Math.sin(angle - 0.4));
-      ctx.moveTo(s.x2, s.y2);
-      ctx.lineTo(s.x2 - headLen * Math.cos(angle + 0.4), s.y2 - headLen * Math.sin(angle + 0.4));
-      ctx.stroke();
+      c.beginPath();
+      c.moveTo(s.x2, s.y2); c.lineTo(s.x2 - headLen * Math.cos(angle - 0.4), s.y2 - headLen * Math.sin(angle - 0.4));
+      c.moveTo(s.x2, s.y2); c.lineTo(s.x2 - headLen * Math.cos(angle + 0.4), s.y2 - headLen * Math.sin(angle + 0.4));
+      c.stroke();
       break;
     }
-
     case 'circle': {
-      ctx.setLineDash([]);
+      c.setLineDash([]);
       const rx = Math.abs(s.x2 - s.x1) / 2;
       const ry = Math.abs(s.y2 - s.y1) / 2;
       const cx = (s.x1 + s.x2) / 2;
       const cy = (s.y1 + s.y2) / 2;
-      ctx.beginPath();
-      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-      ctx.stroke();
+      c.beginPath(); c.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); c.stroke();
       break;
     }
-
     case 'rect':
-      ctx.setLineDash([]);
-      ctx.beginPath();
-      ctx.rect(s.x1, s.y1, s.x2 - s.x1, s.y2 - s.y1);
-      ctx.stroke();
+      c.setLineDash([]); c.beginPath(); c.rect(s.x1, s.y1, s.x2 - s.x1, s.y2 - s.y1); c.stroke();
       break;
-
     case 'freehand':
-      ctx.setLineDash([]);
+      c.setLineDash([]);
       if (s.points.length < 2) return;
-      ctx.beginPath();
-      ctx.moveTo(s.points[0].x, s.points[0].y);
-      for (let i = 1; i < s.points.length; i++) {
-        ctx.lineTo(s.points[i].x, s.points[i].y);
-      }
-      ctx.stroke();
+      c.beginPath(); c.moveTo(s.points[0].x, s.points[0].y);
+      for (let i = 1; i < s.points.length; i++) c.lineTo(s.points[i].x, s.points[i].y);
+      c.stroke();
       break;
   }
 }
 
 function redraw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  state.strokes.forEach(drawStroke);
+  state.strokes.forEach(s => drawStroke(s));
   if (state.currentStroke) drawStroke(state.currentStroke);
 }
 
 // ─── UNDO / CLEAR ───
 document.getElementById('undoBtn').addEventListener('click', undo);
 document.getElementById('clearBtn').addEventListener('click', () => {
+  if (state.strokes.length === 0) return;
   state.strokes = [];
+  setDirty(true);
   redraw();
   showToast('All annotations cleared');
 });
-
 function undo() {
   if (state.strokes.length === 0) return;
   state.strokes.pop();
+  setDirty(true);
   redraw();
   showToast('Undo');
 }
 
 // ─── SAVE / LOAD SESSION ───
-document.getElementById('saveSession').addEventListener('click', () => {
+function saveSessionToFile() {
   const data = JSON.stringify({ strokes: state.strokes }, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'SwingAnnotator-session.json';
   a.click();
+  setDirty(false);
   showToast('Session saved');
-});
+}
+document.getElementById('saveSession').addEventListener('click', saveSessionToFile);
 
 document.getElementById('loadSession').addEventListener('click', () => {
   document.getElementById('sessionInput').click();
@@ -1182,6 +1443,7 @@ document.getElementById('sessionInput').addEventListener('change', e => {
       const data = JSON.parse(ev.target.result);
       if (data.strokes) {
         state.strokes = data.strokes;
+        setDirty(false);
         redraw();
         showToast('Session loaded');
       }
@@ -1202,18 +1464,15 @@ async function exportVideo() {
   exportText.textContent = 'Preparing...';
 
   try {
-    // Create offscreen canvas for compositing
     const offCanvas = document.createElement('canvas');
     offCanvas.width = video.videoWidth;
     offCanvas.height = video.videoHeight;
     const offCtx = offCanvas.getContext('2d');
 
     const stream = offCanvas.captureStream(30);
-    // Add audio if available
     if (video.captureStream) {
       const videoStream = video.captureStream();
-      const audioTracks = videoStream.getAudioTracks();
-      audioTracks.forEach(t => stream.addTrack(t));
+      videoStream.getAudioTracks().forEach(t => stream.addTrack(t));
     }
 
     const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
@@ -1231,13 +1490,12 @@ async function exportVideo() {
       a.download = 'SwingAnnotator-annotated.webm';
       a.click();
       exportModal.classList.remove('show');
+      setDirty(false);
       showToast('Video exported!');
     };
 
-    // Reset video to start
     video.currentTime = 0;
     video.playbackRate = 1;
-
     await new Promise(r => { video.onseeked = r; });
 
     recorder.start();
@@ -1251,54 +1509,8 @@ async function exportVideo() {
         pauseIcon.style.display = 'none';
         return;
       }
-
       offCtx.drawImage(video, 0, 0);
-      // Draw annotations on top
-      state.strokes.forEach(s => {
-        offCtx.strokeStyle = s.color;
-        offCtx.lineWidth = s.width;
-        offCtx.lineCap = 'round';
-        offCtx.lineJoin = 'round';
-        switch (s.type) {
-          case 'line':
-            offCtx.setLineDash([]);
-            offCtx.beginPath(); offCtx.moveTo(s.x1,s.y1); offCtx.lineTo(s.x2,s.y2); offCtx.stroke();
-            break;
-          case 'dashed':
-            offCtx.setLineDash([12,8]);
-            offCtx.beginPath(); offCtx.moveTo(s.x1,s.y1); offCtx.lineTo(s.x2,s.y2); offCtx.stroke();
-            offCtx.setLineDash([]);
-            break;
-          case 'arrow': {
-            offCtx.setLineDash([]);
-            offCtx.beginPath(); offCtx.moveTo(s.x1,s.y1); offCtx.lineTo(s.x2,s.y2); offCtx.stroke();
-            const angle = Math.atan2(s.y2-s.y1,s.x2-s.x1);
-            const hl = 14+s.width*2;
-            offCtx.beginPath();
-            offCtx.moveTo(s.x2,s.y2); offCtx.lineTo(s.x2-hl*Math.cos(angle-0.4),s.y2-hl*Math.sin(angle-0.4));
-            offCtx.moveTo(s.x2,s.y2); offCtx.lineTo(s.x2-hl*Math.cos(angle+0.4),s.y2-hl*Math.sin(angle+0.4));
-            offCtx.stroke();
-            break;
-          }
-          case 'circle': {
-            offCtx.setLineDash([]);
-            const rx=Math.abs(s.x2-s.x1)/2, ry=Math.abs(s.y2-s.y1)/2;
-            offCtx.beginPath(); offCtx.ellipse((s.x1+s.x2)/2,(s.y1+s.y2)/2,rx,ry,0,0,Math.PI*2); offCtx.stroke();
-            break;
-          }
-          case 'rect':
-            offCtx.setLineDash([]);
-            offCtx.beginPath(); offCtx.rect(s.x1,s.y1,s.x2-s.x1,s.y2-s.y1); offCtx.stroke();
-            break;
-          case 'freehand':
-            offCtx.setLineDash([]);
-            if (s.points.length < 2) break;
-            offCtx.beginPath(); offCtx.moveTo(s.points[0].x,s.points[0].y);
-            for (let i=1;i<s.points.length;i++) offCtx.lineTo(s.points[i].x,s.points[i].y);
-            offCtx.stroke();
-            break;
-        }
-      });
+      state.strokes.forEach(s => drawStroke(s, offCtx));
 
       const pct = Math.round((video.currentTime / video.duration) * 100);
       exportProgress.style.width = pct + '%';
@@ -1308,7 +1520,6 @@ async function exportVideo() {
     };
     requestAnimationFrame(renderFrame);
 
-    // Stop when video ends
     video.onended = () => {
       setTimeout(() => {
         if (recorder.state === 'recording') recorder.stop();
@@ -1320,6 +1531,14 @@ async function exportVideo() {
     showToast('Export failed: ' + err.message);
   }
 }
+
+// Warn user before leaving page with unsaved work
+window.addEventListener('beforeunload', e => {
+  if (state.isDirty && state.strokes.length > 0) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
 </script>
 </body>
 </html>
